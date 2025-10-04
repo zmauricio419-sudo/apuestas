@@ -1,4 +1,5 @@
-import pool from "./db";
+import pool from '../db';   // ✅
+
 
 app.get("/api/test-db", async (_req, res) => {
   try {
