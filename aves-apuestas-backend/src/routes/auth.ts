@@ -5,44 +5,35 @@ import bcrypt from "bcrypt";
 const router = Router();
 
 // 🔹 Registro de usuario (REEMPLAZA ESTA PARTE COMPLETA por la siguiente)
+// 🔹 Registro de usuario
 router.post("/register", async (req, res) => {
-  console.log("📥 RECIBIENDO REGISTRO:", req.body);  // 👈 LOG NUEVO
+  const { nombre, email, password } = req.body;
 
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    console.log("❌ Falta email o password");
-    return res.status(400).json({ error: "Email y contraseña requeridos" });
-  }
+  if (!nombre || !email || !password)
+    return res.status(400).json({ error: "Nombre, email y contraseña requeridos" });
 
   try {
-    console.log("🔎 Verificando si existe el usuario...");
     const existing = await pool.query("SELECT * FROM usuarios WHERE email = $1 LIMIT 1", [email]);
-    console.log("Resultado SELECT:", existing.rows);
-
     if (existing.rows.length > 0) {
-      console.log("⚠ Usuario ya existe");
       return res.status(400).json({ error: "El usuario ya existe" });
     }
 
-    console.log("🔐 Hasheando contraseña...");
     const password_hash = await bcrypt.hash(password, 10);
 
-    console.log("📝 Insertando nuevo usuario...");
     const { rows } = await pool.query(
-      "INSERT INTO usuarios (email, password_hash) VALUES ($1, $2) RETURNING *",
-      [email, password_hash]
+      "INSERT INTO usuarios (nombre, email, password_hash, saldo) VALUES ($1, $2, $3, $4) RETURNING *",
+      [nombre, email, password_hash, 0] // saldo inicial = 0
     );
 
-    console.log("✅ Registro exitoso:", rows[0]);
     const user = rows[0];
     delete user.password_hash;
     return res.json(user);
   } catch (err) {
-    console.error("🔥 ERROR DE REGISTRO:", err);
+    console.error("❌ Error en registro:", err);
     return res.status(500).json({ error: "Error al registrar usuario" });
   }
 });
+
 
 
 // 🔹 Login (DEJA ESTA PARTE IGUAL)
