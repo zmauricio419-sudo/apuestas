@@ -1,9 +1,11 @@
 import { Router } from "express";
 import pool from "../db";
+import { verifyToken } from "../middlewares/auth";
+import { isAdmin } from "../middlewares/isAdmin";
 
-const router = Router();
+const router = Router(); // ✅ Esto primero
 
-// ✅ Obtener todas las competencias
+// ✅ Obtener todas las competencias (pública)
 router.get("/", async (_req, res) => {
   try {
     const q = `SELECT * FROM v_competencia_resumen ORDER BY fecha_hora`;
@@ -15,8 +17,30 @@ router.get("/", async (_req, res) => {
   }
 });
 
-// ✅ Finalizar competencia y pagar apuestas
-router.post("/finalizar", async (req, res) => {
+// ✅ Crear una nueva competencia (solo admin)
+router.post("/", verifyToken, isAdmin, async (req, res) => {
+  const { nombre, descripcion, fecha_hora, lugar } = req.body;
+
+  if (!nombre || !fecha_hora) {
+    return res.status(400).json({ error: "Nombre y fecha_hora son obligatorios" });
+  }
+
+  try {
+    const q = `
+      INSERT INTO competencias (nombre, descripcion, fecha_hora, lugar)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *;
+    `;
+    const { rows } = await pool.query(q, [nombre, descripcion, fecha_hora, lugar]);
+    return res.json({ mensaje: "Competencia creada correctamente", competencia: rows[0] });
+  } catch (err: any) {
+    console.error("ERR POST /competencias:", err);
+    return res.status(500).json({ error: "Error al crear competencia" });
+  }
+});
+
+// ✅ Finalizar competencia (solo admin también, ¿lo aseguramos?)
+router.post("/finalizar", verifyToken, isAdmin, async (req, res) => {
   const { id_competencia, id_ave_ganador } = req.body;
 
   if (!id_competencia || !id_ave_ganador) {
@@ -24,7 +48,6 @@ router.post("/finalizar", async (req, res) => {
   }
 
   try {
-    // 1️⃣ Obtener todas las apuestas de esa competencia
     const { rows: apuestas } = await pool.query(
       "SELECT * FROM apuestas WHERE id_competencia = $1",
       [id_competencia]
