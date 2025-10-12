@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import Modal from "./Modal";
+import { data } from "react-router-dom";
 
 interface Props {
   id_usuario: number;
@@ -16,12 +17,13 @@ const ApuestaForm: React.FC<Props> = ({ id_usuario, id_competencia, trigger }) =
 
   const handleApuesta = async () => {
     try {
-      const res = await axios.post("http://localhost:4000/api/apuestas", {
-        id_usuario,
-        id_competencia,
-        id_ave: idAve,
-        monto,
-      });
+      const res = await axios.post("https://aves-backend.onrender.com/api/apuestas", {
+  id_usuario,
+  id_competencia,
+  id_ave: idAve,
+  monto,
+});
+
 
       setMensaje(`✅ Apuesta realizada. Saldo restante: $${res.data.saldo_restante}`);
       setTimeout(() => setIsOpen(false), 1500);

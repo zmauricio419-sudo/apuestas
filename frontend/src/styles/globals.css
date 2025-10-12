@@ -187,3 +187,12 @@
 html {
   font-size: var(--font-size);
 }
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.animate-fade-out {
+  animation: fadeOut 1s ease-in-out forwards;
+  animation-delay: 2s; /* Visible 2s, se desvanece en el último segundo */
+}

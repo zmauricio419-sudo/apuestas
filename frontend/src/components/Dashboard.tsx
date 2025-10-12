@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -6,6 +7,17 @@ import { Trophy, Bird, DollarSign, TrendingUp, Calendar, Clock } from 'lucide-re
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
 export function Dashboard() {
+  const location = useLocation();
+  const [welcomeMessage, setWelcomeMessage] = useState(location.state?.welcome || "¡Bienvenido a GallosPro!");
+
+  // 🔹 Ocultar mensaje automáticamente después de 3 segundos
+  useEffect(() => {
+    if (welcomeMessage) {
+      const timer = setTimeout(() => setWelcomeMessage(""), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [welcomeMessage]);
+
   const upcomingFights = [
     {
       id: 1,
@@ -38,6 +50,14 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
+
+      {/* 🔹 Mensaje de bienvenida con auto-ocultamiento */}
+      {welcomeMessage && (
+        <div className="text-center py-4 bg-green-600 text-white rounded-lg font-bold animate-fade-out">
+          {welcomeMessage} 👋
+        </div>
+      )}
+
       <div className="text-center py-8">
         <h1 className="text-4xl font-bold text-white mb-2">Bienvenido a GallosPro</h1>
         <p className="text-gray-300">La plataforma líder en competencias de gallos</p>

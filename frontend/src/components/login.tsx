@@ -1,10 +1,9 @@
-console.log("Mostrando login");
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function Login() {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -13,24 +12,24 @@ export function Login() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:4000/login", {
+      const res = await fetch("https://aves-backend.onrender.com/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Error de inicio de sesión");
+        setError(data.error || "Credenciales incorrectas");
         return;
       }
 
-      // GUARDAMOS EL USUARIO
+      // ✅ Guardar correctamente en localStorage
       localStorage.setItem("user", JSON.stringify(data));
 
-      // REDIRECCIÓN
-      navigate("/"); // <-- cámbialo si tienes otra ruta principal
+      navigate("/dashboard");
+      window.location.reload(); // 🔄 Forzar recarga para mostrar el menú
     } catch {
       setError("Error de conexión con el servidor");
     }
@@ -50,14 +49,27 @@ export function Login() {
           required
         />
 
+        <input
+          type="password"
+          className="w-full p-2 mb-3 rounded bg-slate-700"
+          placeholder="Tu contraseña..."
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+
         {error && <p className="text-red-400 text-sm mb-2">{error}</p>}
 
-        <button
-          type="submit"
-          className="w-full bg-purple-600 hover:bg-purple-700 p-2 rounded font-bold"
-        >
+        <button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 p-2 rounded font-bold">
           Entrar
         </button>
+
+        <p className="text-sm text-center mt-2">
+          ¿No tienes cuenta?{" "}
+          <span className="text-green-400 cursor-pointer" onClick={() => navigate("/register")}>
+            Registrarse
+          </span>
+        </p>
       </form>
     </div>
   );

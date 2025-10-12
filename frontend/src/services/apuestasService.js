@@ -1,5 +1,6 @@
 // src/services/apuestasService.js
-const API_URL = "http://localhost:4000/api";
+const API_URL = "https://aves-backend.onrender.com/api";
+
 
 export const crearApuesta = async (apuesta) => {
   const res = await fetch(`${API_URL}/apuestas`, {

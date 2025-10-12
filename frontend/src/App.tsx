@@ -11,6 +11,13 @@ import { BettingSystem } from "./components/BettingSystem";
 import { Statistics } from "./components/Statistics";
 import { Dashboard } from "./components/Dashboard";
 import { Login } from "./components/Login";
+import { Register } from "./components/Register"; // ✅ Nuevo
+
+import { AdminRoute } from "./components/AdminRoute";
+import { AdminDashboard } from "./components/AdminDashboard";
+
+
+
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -23,15 +30,20 @@ export default function App() {
 
       <main className="container mx-auto px-4 py-8">
         <Routes>
+          {/* ✅ Rutas públicas */}
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} /> {/* ✅ Nueva ruta */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
+          {/* ✅ Rutas protegidas */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/birds" element={<ProtectedRoute><BirdRegistry /></ProtectedRoute>} />
           <Route path="/competitions" element={<ProtectedRoute><CompetitionManagement /></ProtectedRoute>} />
           <Route path="/live" element={<ProtectedRoute><LiveStream /></ProtectedRoute>} />
           <Route path="/betting" element={<ProtectedRoute><BettingSystem /></ProtectedRoute>} />
           <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+
         </Routes>
       </main>
     </div>

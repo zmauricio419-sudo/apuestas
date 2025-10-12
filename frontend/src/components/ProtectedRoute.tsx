@@ -11,6 +11,18 @@ export function ProtectedRoute({ children }: Props) {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+  export function AdminRoute({ children }: { children: JSX.Element }) {
+  const userData = localStorage.getItem("user");
+  const user = userData ? JSON.parse(userData) : null;
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.rol !== "admin") {
+    return <Navigate to="/dashboard" replace />; // redirige si no es admin
+  }
+
 
   return children;
 }
