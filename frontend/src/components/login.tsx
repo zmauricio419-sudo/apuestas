@@ -26,7 +26,9 @@ export function Login() {
       }
 
       // ✅ Guardar correctamente en localStorage
-      localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("user", JSON.stringify(data.user));
+localStorage.setItem("token", data.token);
+
 
       navigate("/dashboard");
       window.location.reload(); // 🔄 Forzar recarga para mostrar el menú
