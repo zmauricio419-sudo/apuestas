@@ -50,25 +50,40 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("🟢 LOGIN REQUEST:", { email, password }); // ✅ Ver qué recibimos del frontend/Postman
+
   if (!email || !password)
     return res.status(400).json({ error: "Email y contraseña requeridos" });
 
   try {
     const { rows } = await pool.query("SELECT * FROM usuarios WHERE email = $1 LIMIT 1", [email]);
-    if (rows.length === 0) return res.status(404).json({ error: "Usuario no encontrado" });
+    
+    console.log("🟠 USER FROM DB:", rows); // ✅ Ver qué devuelve la consulta
+
+    if (rows.length === 0) {
+      console.log("🔴 Usuario no encontrado en la base de datos"); 
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
 
     const user = rows[0];
     const valid = await bcrypt.compare(password, user.password_hash);
-    if (!valid) return res.status(401).json({ error: "Contraseña incorrecta" });
+
+    console.log("🟡 PASSWORD MATCH:", valid); // ✅ Ver si el bcrypt retorna true o false
+
+    if (!valid) {
+      console.log("🔴 Contraseña incorrecta para este usuario");
+      return res.status(401).json({ error: "Contraseña incorrecta" });
+    }
 
     delete user.password_hash;
 
-    // 🔹 Generar token JWT
     const token = jwt.sign(
       { id: user.id_usuario, email: user.email, rol: user.rol },
       process.env.JWT_SECRET as string,
       { expiresIn: "7d" }
     );
+
+    console.log("✅ LOGIN EXITOSO:", { user, token });
 
     return res.json({ user, token });
   } catch (err) {
@@ -76,5 +91,6 @@ router.post("/login", async (req, res) => {
     return res.status(500).json({ error: "Error al iniciar sesión" });
   }
 });
+
 
 export default router;
