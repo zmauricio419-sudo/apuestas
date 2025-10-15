@@ -58,6 +58,11 @@ router.post("/login", async (req, res) => {
     const user = result.rows[0];
     if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
 
+    console.log("🟢 LOGIN REQUEST:", email, password);
+console.log("🟠 USER FROM DB:", user);
+console.log("🟤 HASH IN DB:", user.password_hash);
+
+
     const valid = await bcrypt.compare(password, user.password_hash);
     console.log("🟡 PASSWORD VALID:", valid);
 
