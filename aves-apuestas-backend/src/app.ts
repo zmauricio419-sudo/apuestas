@@ -13,13 +13,8 @@ const app = express();
 app.use(express.json());
 
 // Configuración de CORS
-const frontendOrigin = process.env.FRONTEND_ORIGIN || "*";
-app.use(
-  cors({
-    origin: frontendOrigin,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-  })
-);
+app.use(cors());
+
 
 // ✅ Ruta de prueba de conexión a la BD
 app.get("/api/test-db", async (_req, res) => {
