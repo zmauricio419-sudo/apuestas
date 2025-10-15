@@ -61,6 +61,8 @@ router.post("/login", async (req, res) => {
     const valid = await bcrypt.compare(password, user.password_hash);
     console.log("🟡 PASSWORD VALID:", valid);
 
+    if (!valid) return res.status(401).json({ error: "Contraseña incorrecta" }); // ✅ FALTABA ESTO
+
     const token = jwt.sign(
       { id: user.id_usuario, email: user.email, rol: user.rol },
       process.env.JWT_SECRET as string,
@@ -75,6 +77,7 @@ router.post("/login", async (req, res) => {
     return res.status(500).json({ error: "Error al iniciar sesión" });
   }
 });
+
 
 
 
