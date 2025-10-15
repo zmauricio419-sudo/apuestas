@@ -44,44 +44,12 @@ router.post("/register", async (req, res) => {
   }
 });
 
-/**
- * 🔹 Login de usuario
- */
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  console.log("🟢 LOGIN REQUEST:", email, password);
 
-  try {
-    const result = await pool.query("SELECT * FROM usuarios WHERE email = $1 LIMIT 1", [email]);
-    console.log("🟠 DB RESULT:", result.rows);
-
-    const user = result.rows[0];
-    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
-
-    console.log("🟢 LOGIN REQUEST:", email, password);
-console.log("🟠 USER FROM DB:", user);
-console.log("🟤 HASH IN DB:", user.password_hash);
-
-
-    const valid = await bcrypt.compare(password, user.password_hash);
-    console.log("🟡 PASSWORD VALID:", valid);
-
-    if (!valid) return res.status(401).json({ error: "Contraseña incorrecta" }); // ✅ FALTABA ESTO
-
-    const token = jwt.sign(
-      { id: user.id_usuario, email: user.email, rol: user.rol },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "7d" }
-    );
-
-    console.log("✅ TOKEN GENERATED:", token);
-
-    return res.json({ user, token });
-  } catch (err) {
-    console.error("❌ ERROR EXACTO:", err);
-    return res.status(500).json({ error: "Error al iniciar sesión" });
-  }
+ router.post("/login", async (req, res) => {
+  console.log("🔥 LOGIN HIT - BODY:", req.body);
+  return res.json({ message: "El backend sí recibe el login" });
 });
+
 
 
 
